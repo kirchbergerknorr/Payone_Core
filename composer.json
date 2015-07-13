@@ -1,0 +1,16 @@
+{
+    "name": "kirchbergerknorr/Payone_Core",
+    "description": "Payone",
+    "keywords": ["magento", "payone", "payment"],
+    "type": "magento-module",
+    "license":"OSL-3.0",
+    "authors": [
+        {
+            "name": "Aleksey Razbakov",
+            "email": "ar@kirchbergerknorr.de"
+        }
+    ],
+    "require": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}
