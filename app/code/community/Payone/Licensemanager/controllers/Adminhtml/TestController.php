@@ -32,6 +32,12 @@
  */
 class Payone_Licensemanager_Adminhtml_TestController extends Mage_Adminhtml_Controller_Action
 {
+
+    protected function _isAllowed()
+    {
+        return true;
+    }
+
     public function indexAction()
     {
         $this->loadLayout();
