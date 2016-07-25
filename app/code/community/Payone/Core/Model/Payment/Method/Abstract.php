@@ -55,6 +55,8 @@ abstract class Payone_Core_Model_Payment_Method_Abstract
     protected $methodType = '';
     protected $redirectUrl = '';
 
+    protected $_defaultApiResponseErrorMessage = 'There has been an error processing your payment';
+    
     /**
      * @var Payone_Core_Model_Config_Interface
      */
@@ -64,6 +66,8 @@ abstract class Payone_Core_Model_Payment_Method_Abstract
      */
     protected $config = null;
 
+    protected $_blIpMandatory = false;
+    
     /**
      * override parent method to get the user-configured title, not the one from config.xml
      *
@@ -90,7 +94,7 @@ abstract class Payone_Core_Model_Payment_Method_Abstract
                 return $this->getConfigForQuote($quote)->getName();
             }
         }
-        catch (Payone_Core_Exception_PaymentMethodConfigNotFound $e) {
+        catch (Exception $e) {
             return parent::getTitle(); // if for some reason config was not found, use parent method
         }
         // call parent method if no config available
@@ -169,7 +173,6 @@ abstract class Payone_Core_Model_Payment_Method_Abstract
 
         if ($this->getCode() == Payone_Core_Model_System_Config_PaymentMethodCode::CREDITCARD
                 or $this->getCode() == Payone_Core_Model_System_Config_PaymentMethodCode::SAFEINVOICE
-                or $this->getCode() == Payone_Core_Model_System_Config_PaymentMethodCode::FINANCING
         ) {
             // Capture with amount=0, to notify PAYONE that the order is complete (invoiced/cancelled all items)
             // Only works with Creditcard at the moment (15.10.2013)
@@ -535,6 +538,16 @@ abstract class Payone_Core_Model_Payment_Method_Abstract
     public function getMethodType()
     {
         return $this->methodType;
+    }
+    
+    public function getApiResponseErrorMessage($response)
+    {
+        return $this->_defaultApiResponseErrorMessage;
+    }
+    
+    public function getIsIpMandatory()
+    {
+        return $this->_blIpMandatory;
     }
 
 }

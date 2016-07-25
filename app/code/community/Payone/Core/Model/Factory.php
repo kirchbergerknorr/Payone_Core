@@ -307,7 +307,7 @@ class Payone_Core_Model_Factory
     /**
      * @return bool
      */
-    protected function getIsAdmin()
+    public function getIsAdmin()
     {
         return Mage::app()->getStore()->isAdmin();
     }
@@ -1496,6 +1496,14 @@ class Payone_Core_Model_Factory
     {
         return Mage::getSingleton('payone_core/system_config_clearingType');
     }
+    
+    /**
+     * @return Payone_Core_Model_System_Config_PaymentFeeType
+     */
+    public function getModelSystemConfigPaymentFeeType()
+    {
+        return Mage::getSingleton('payone_core/system_config_paymentFeeType');
+    }
 
     /**
      * @return Payone_Core_Model_System_Config_Mode
@@ -1544,6 +1552,14 @@ class Payone_Core_Model_Factory
     {
         return Mage::getSingleton('payone_core/system_config_onlinebanktransferType');
     }
+    
+    /**
+     * @return Payone_Core_Model_System_Config_PayolutionType
+     */
+    public function getModelSystemConfigPayolutionType()
+    {
+        return Mage::getSingleton('payone_core/system_config_payolutionType');
+    }
 
     /**
      * @return Payone_Core_Model_System_Config_WalletType
@@ -1552,15 +1568,6 @@ class Payone_Core_Model_Factory
     {
         return Mage::getSingleton('payone_core/system_config_walletType');
     }
-
-    /**
-     * @return Payone_Core_Model_System_Config_FinancingType
-     */
-    public function getModelSystemConfigFinancingType()
-    {
-        return Mage::getSingleton('payone_core/system_config_financingType');
-    }
-
 
     /**
      * @return Payone_Core_Model_System_Config_SafeInvoiceType

@@ -117,13 +117,6 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
         $paymentMethod = $this->getPaymentMethod();
 
         $requestType = $this->configPayment->getRequestType();
-        // Always use PREAUTHORIZATION for Financing of type "Commerz Finanz"
-        if ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Financing) {
-            $financingType = $paymentMethod->getInfoInstance()->getPayoneFinancingType();
-            if ($financingType == Payone_Api_Enum_FinancingType::CFR) {
-                $requestType = Payone_Api_Enum_RequestType::PREAUTHORIZATION;
-            }
-        }
         // Always use PREAUTHORIZATION for Safe Invoice of type "Klarna"
         if ($paymentMethod instanceof Payone_Core_Model_Payment_Method_SafeInvoice) {
             $safeInvoiceType = $paymentMethod->getInfoInstance()->getPayoneSafeInvoiceType();
@@ -133,6 +126,11 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
         }
         // Always use PREAUTHORIZATION for Barzahlen
         if ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Barzahlen) {
+            $requestType = Payone_Api_Enum_RequestType::PREAUTHORIZATION;
+        }
+        
+        // Always use PREAUTHORIZATION for Payolution
+        if ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Payolution) {
             $requestType = Payone_Api_Enum_RequestType::PREAUTHORIZATION;
         }
 
@@ -147,9 +145,12 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
         /** load correct narrative text from config */
         if ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Creditcard) {
             $narrativeText = $this->getNarrativeText('creditcard');
-        }
-        elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_DebitPayment) {
+        } elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_DebitPayment) {
             $narrativeText = $this->getNarrativeText('debit_payment');
+        } elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Wallet && $this->_getWalletType() == Payone_Api_Enum_WalletType::PAYDIREKT) {
+            $narrativeText = $order->getIncrementId();
+        } elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Wallet && $this->_getWalletType() == Payone_Api_Enum_WalletType::PAYPAL_EXPRESS) {
+            $narrativeText = $this->getNarrativeText('paypal_express');
         }
         $request->setNarrativeText($narrativeText);
 
@@ -202,7 +203,9 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
         // Send Ip when enabled
         if ($global->getTransmitIp()) {
             $ip = $this->getCustomerIp();
-
+            if(!$ip && $paymentMethod->getIsIpMandatory() === true) {
+                $ip = Mage::helper('core/http')->getRemoteAddr();
+            }
             $personalData->setIp($ip);
         }
 
@@ -222,14 +225,6 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
         ) {
             $personalData = $this->mapPersonalParametersSafeInvoiceKlarna($personalData);
         }
-
-        // Financing "Klarna" specific personal parameters mapping
-        if ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Financing
-            and $paymentMethod->getInfoInstance()->getPayoneFinancingType() == Payone_Api_Enum_FinancingType::KLS
-        ) {
-            $personalData = $this->mapPersonalParametersSafeInvoiceKlarna($personalData);
-        }
-
         return $personalData;
     }
 
@@ -411,11 +406,6 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
 //            $params['va'] = number_format($itemData->getTaxPercent(), 0, '.', '');
             $params['va'] = round( $itemData->getTaxPercent() * 100 );   // transfer vat in basis point format [#MAGE-186]
 
-            if ($this->getPaymentMethod()->mustTransmitInvoicingItemTypes()) {
-                $params['it'] = Payone_Api_Enum_InvoicingItemType::GOODS;
-            }
-
-
             $item = new Payone_Api_Request_Parameter_Invoicing_Item();
             $item->init($params);
             $invoicing->addItem($item);
@@ -473,6 +463,8 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
             $payoneOnlinebanktransferType = $info->getPayoneOnlinebanktransferType();
             $iban = $info->getPayoneSepaIban();
             $bic = $info->getPayoneSepaBic();
+            $bankaccount = $info->getPayoneAccountNumber();
+            $bankcode = $info->getPayoneBankCode();
 
             $payment = new Payone_Api_Request_Parameter_Authorization_PaymentMethod_OnlineBankTransfer();
             $payment->setBankcountry($country);
@@ -481,13 +473,12 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
             switch ($payoneOnlinebanktransferType) {
                 case Payone_Api_Enum_OnlinebanktransferType::INSTANT_MONEY_TRANSFER:
                 case Payone_Api_Enum_OnlinebanktransferType::GIROPAY:
-                    if (!empty($iban) and !empty($bic)) {
+                    if (!empty($iban) && !empty($bic)) {
                         $payment->setIban(strtoupper($iban));
                         $payment->setBic(strtoupper($bic)); // ensure bic and iban are sent uppercase
-                    }
-                    else {
-                        $payment->setBankaccount($info->getPayoneAccountNumber());
-                        $payment->setBankcode($info->getPayoneBankCode());
+                    } elseif (!empty($bankaccount) && !empty($bankcode)) {
+                        $payment->setBankaccount($bankaccount);
+                        $payment->setBankcode($bankcode);
                     }
                     break;
                 case Payone_Api_Enum_OnlinebanktransferType::IDEAL:
@@ -502,26 +493,6 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
 
             $isRedirect = true;
         }
-        elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Financing) {
-
-            $payment = new Payone_Api_Request_Parameter_Authorization_PaymentMethod_Financing();
-            $payment->setFinancingtype($info->getPayoneFinancingType());
-
-            if($info->getPayoneFinancingType() == Payone_Api_Enum_FinancingType::KLS) {
-                $configPaymentMethodId = $info->getPayoneConfigPaymentMethodId();
-                $paymentConfig = $paymentMethod->getConfigPayment();
-
-
-                $payData = new Payone_Api_Request_Parameter_Paydata_Paydata();
-                $payData->addItem(new Payone_Api_Request_Parameter_Paydata_DataItem(
-                    array('key' => 'klsid', 'data' => $info->getPayoneKlarnaCampaignCode())
-                ));
-                $payment->setPaydata($payData);
-            }
-
-            $isRedirect = true;
-        }
-
         elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_SafeInvoice) {
 
             $payment = new Payone_Api_Request_Parameter_Authorization_PaymentMethod_Financing();
@@ -534,15 +505,7 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
         }
         elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Wallet) {
             $payment = new Payone_Api_Request_Parameter_Authorization_PaymentMethod_Wallet();
-            $sType = false;
-            
-            $aPostPayment = Mage::app()->getRequest()->getPost('payment');
-            if($aPostPayment && array_key_exists('payone_wallet_type', $aPostPayment)) {
-                $sType = $aPostPayment['payone_wallet_type'];
-            } else {
-                $sType = Payone_Api_Enum_WalletType::PAYPAL_EXPRESS;
-            }
-            $payment->setWallettype($sType);
+            $payment->setWallettype($this->_getWalletType());
             $isRedirect = true;
         }
         elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_DebitPayment) {
@@ -550,11 +513,13 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
             $payment->setBankcountry($info->getPayoneBankCountry());
             $iban = $info->getPayoneSepaIban();
             $bic = $info->getPayoneSepaBic();
-            if (!empty($iban) and !empty($bic)) {
+
+            if (!empty($iban)) {
                 $payment->setIban(strtoupper($iban));
-                $payment->setBic(strtoupper($bic)); // ensure bic and iban are sent uppercase
-            }
-            else {
+                if(!empty($bic)) {
+                    $payment->setBic(strtoupper($bic)); // ensure bic and iban are sent uppercase
+                }
+            } else {
                 $payment->setBankaccount($info->getPayoneAccountNumber());
                 $payment->setBankcode($info->getPayoneBankCode());
             }
@@ -577,6 +542,67 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
             $payment = new Payone_Api_Request_Parameter_Authorization_PaymentMethod_Barzahlen();
             $payment->setApiVersion();
             $payment->setCashtype();
+        } elseif($paymentMethod instanceof Payone_Core_Model_Payment_Method_Ratepay) {
+            $payment = new Payone_Api_Request_Parameter_Authorization_PaymentMethod_RatePay();
+            $payment->setFinancingtype();
+            $payment->setApiVersion();
+            
+            $checkoutSession = $this->getFactory()->getSingletonCheckoutSession();
+            $mandateStatus = $checkoutSession->getRatePayFingerprint();
+
+            $payData = new Payone_Api_Request_Parameter_Paydata_Paydata();
+            $payData->addItem(new Payone_Api_Request_Parameter_Paydata_DataItem(
+                array('key' => 'customer_allow_credit_inquiry', 'data' => 'yes') // hardcoded by concept
+            ));
+            $payData->addItem(new Payone_Api_Request_Parameter_Paydata_DataItem(
+                array('key' => 'device_token', 'data' => $checkoutSession->getRatePayFingerprint()) 
+            ));
+            $payData->addItem(new Payone_Api_Request_Parameter_Paydata_DataItem(
+                array('key' => 'shop_id', 'data' => $info->getPayoneRatepayShopId())
+            ));
+            $payment->setPaydata($payData);
+
+            $birthdayDate = $info->getPayoneCustomerDob();
+            if (empty($birthdayDate)) {
+                $birthdayDate = $this->getOrder()->getCustomerDob();
+            }
+            $payment->setBirthday($this->formatBirthday($birthdayDate));
+            
+            $telephone = $info->getPayoneCustomerTelephone();
+            if (empty($telephone)) {
+                $telephone = $this->getOrder()->getBillingAddress()->getTelephone();
+            }
+            $payment->setTelephonenumber($telephone);
+        } elseif($paymentMethod instanceof Payone_Core_Model_Payment_Method_Payolution) {
+            $payment = new Payone_Api_Request_Parameter_Authorization_PaymentMethod_Payolution();
+            $payment->setApiVersion();
+            $payment->setFinancingtype($info->getPayonePayolutionType());
+            $payment->setWorkorderid($info->getPayoneWorkorderid());
+            $payment->setIban(strtoupper($info->getPayonePayolutionIban()));
+            $payment->setBic(strtoupper($info->getPayonePayolutionBic()));
+
+            $checkoutSession = $this->getFactory()->getSingletonCheckoutSession();
+            $payment->setWorkorderid($checkoutSession->getPayoneWorkorderId());
+            $info->setPayoneWorkorderId($checkoutSession->getPayoneWorkorderId());
+            
+            if((bool)$info->getPayoneIsb2b() === true) {
+                $payData = new Payone_Api_Request_Parameter_Paydata_Paydata();
+                $payData->addItem(new Payone_Api_Request_Parameter_Paydata_DataItem(
+                    array('key' => 'b2b', 'data' => 'yes')
+                ));
+                $payData->addItem(new Payone_Api_Request_Parameter_Paydata_DataItem(
+                    array('key' => 'company_trade_registry_number', 'data' => $info->getPayoneTradeRegistryNumber()) 
+                ));
+                $payment->setPaydata($payData);
+            } else {
+                $birthdayDate = $info->getPayoneCustomerDob();
+                if (empty($birthdayDate)) {
+                    $birthdayDate = $this->getOrder()->getCustomerDob();
+                }
+                if($birthdayDate) {
+                    $payment->setBirthday($this->formatBirthday($birthdayDate));
+                }
+            }
         }
 
         if ($isRedirect === true) {
@@ -590,6 +616,18 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
         }
 
         return $payment;
+    }
+    
+    protected function _getWalletType() {
+        $sType = false;
+
+        $aPostPayment = Mage::app()->getRequest()->getPost('payment');
+        if($aPostPayment && array_key_exists('payone_wallet_type', $aPostPayment)) {
+            $sType = $aPostPayment['payone_wallet_type'];
+        } else {
+            $sType = Payone_Api_Enum_WalletType::PAYPAL_EXPRESS;
+        }
+        return $sType;
     }
 
     /**
@@ -624,14 +662,17 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
         elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_DebitPayment) {
             $clearingType = Payone_Enum_ClearingType::DEBITPAYMENT;
         }
-        elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Financing) {
-            $clearingType = Payone_Enum_ClearingType::FINANCING;
-        }
         elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_SafeInvoice) {
             $clearingType = Payone_Enum_ClearingType::FINANCING;
         }
         elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Barzahlen) {
             $clearingType = Payone_Enum_ClearingType::BARZAHLEN;
+        }
+        elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Ratepay) {
+            $clearingType = Payone_Enum_ClearingType::RATEPAY;
+        }
+        elseif ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Payolution) {
+            $clearingType = Payone_Enum_ClearingType::PAYOLUTION;
         }
 
         return $clearingType;
@@ -662,9 +703,12 @@ abstract class Payone_Core_Model_Mapper_ApiRequest_Payment_Authorize_Abstract
         $narrativeText = '';
         if ($type === 'creditcard') {
             $narrativeText = $parameterNarrativeText->getCreditcard();
-        }
-        elseif ($type === 'debit_payment') {
+        } elseif ($type === 'debit_payment') {
             $narrativeText = $parameterNarrativeText->getDebitPayment();
+        } elseif ($type === 'paydirekt') {
+            $narrativeText = $parameterNarrativeText->getPaydirekt();
+        } elseif ($type === 'paypal_express') {
+            $narrativeText = $parameterNarrativeText->getPaypalExpress();
         }
 
         $substitutionArray = array(

@@ -274,15 +274,6 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </safe_invoice>
-                        <financing translate="label">
-                            <label>Financing</label>
-                            <frontend_model>payone_core/adminhtml_system_config_form_field_statusMapping</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </financing>
                         <debit_payment translate="label">
                             <label>Debit Payment</label>
                             <frontend_model>payone_core/adminhtml_system_config_form_field_statusMapping</frontend_model>
@@ -328,6 +319,42 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </wallet>
+                        <barzahlen translate="label">
+                            <label>Barzahlen</label>
+                            <frontend_model>payone_core/adminhtml_system_config_form_field_statusMapping</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </barzahlen>
+                        <payolution translate="label">
+                            <label>Payolution</label>
+                            <frontend_model>payone_core/adminhtml_system_config_form_field_statusMapping</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </payolution>
+                        <ratepay translate="label">
+                            <label>RatePay</label>
+                            <frontend_model>payone_core/adminhtml_system_config_form_field_statusMapping</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ratepay>
+                        <financing translate="label">
+                            <label>Finanzierung</label>
+                            <frontend_model>payone_core/adminhtml_system_config_form_field_statusMapping</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </financing>
                     </fields>
                 </status_mapping>
                 <payment_creditcard>
@@ -446,6 +473,24 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </debit_payment>
+                        <!--paydirekt>
+                            <label>Paydirekt</label>
+                            <comment>Maximum 37 digits. Placeholders: {{order_increment_id}}</comment>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </paydirekt-->
+                        <paypal_express>
+                            <label>Paypal Express</label>
+                            <comment>Maximum 81 digits. Placeholders: {{order_increment_id}}. This is an advanced feature that has to be seperately activated by PAYONE for your merchant account!</comment>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </paypal_express>
                     </fields>
                 </parameter_narrative_text>
             </groups>
@@ -676,7 +721,7 @@
                         <check_cvc translate="label">
                             <label>Check Card Validation Code</label>
                             <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <source_model>payone_core/system_config_creditcardCheckCvc</source_model>
                             <sort_order>250</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -743,6 +788,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </sepa_country>
+                        <sepa_request_bic translate="label">
+                            <label>Request BIC</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>235</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sepa_request_bic>
                         <sepa_de_show_bank_data translate="label,comment">
                             <label>Show additional account number/bank code number</label>
                             <comment>Only for German accounts</comment>
@@ -810,6 +864,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </customer_form_data_save>
+                        <sofortueberweisung_show_iban translate="label">
+                            <label>Sofort-Ueberweisung: Display IBAN/BIC inputs</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>280</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sofortueberweisung_show_iban>
                     </fields>
                 </template_online_bank_transfer>
                 <template_invoice translate="label" module="payone_core">
@@ -850,71 +913,6 @@
                         </klarna_config>
                     </fields>
                 </template_safe_invoice>
-                <template_financing translate="label" module="payone_core">
-                    <label>Financing</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>5</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <min_order_total translate="label, comment">
-                            <label>Minimum Order Total</label>
-                            <comment>Please note that for Commerz Finanz the maximum transaction amount is EUR5000.00.</comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>55</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </min_order_total>
-                        <max_order_total translate="label, comment">
-                            <label>Maximum Order Total</label>
-                            <comment>Please note that for Commerz Finanz the minimum transaction amount is EUR100.00.</comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>58</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </max_order_total>
-                        <types translate="label,comment">
-                            <label>Financing-Type</label>
-                            <frontend_type>multiselect</frontend_type>
-                            <source_model>payone_core/system_config_financingType</source_model>
-                            <sort_order>200</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </types>
-                        <klarna_config translate="label">
-                            <label>Klarna Store-IDs</label>
-                            <comment>Required when using Klarna</comment>
-                            <frontend_model>payone_core/adminhtml_system_config_form_field_klarnaStoreId</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>210</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </klarna_config>
-                        <klarna_campaign_code translate="label, comment">
-                            <label>Klarna Campaign Code</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>220</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </klarna_campaign_code>
-                        <request_type_cfr translate="label">
-                            <label>Authorize-Method</label>
-                            <comment>Please note that for Commerz Finanz only the mode "preauthorization" is available. Afterwards payments must be captured. (CAPTURE)</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>payone_core/system_config_authorizeMethodFinancing</source_model>
-                            <sort_order>230</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </request_type_cfr>
-                    </fields>
-                </template_financing>
                 <template_wallet translate="label" module="payone_core">
                     <label>Wallet</label>
                     <frontend_type>text</frontend_type>
@@ -970,6 +968,82 @@
                     <show_in_store>1</show_in_store>
                     <fields></fields>
                 </template_barzahlen>
+                <template_ratepay translate="label" module="payone_core">
+                    <label>RatePay</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>8</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <types translate="label,comment">
+                            <label>Type</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>payone_core/system_config_ratepayType</source_model>
+                            <sort_order>200</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </types>
+                        <ratepay_config translate="label,comment">
+                            <label>RatePay Shop-IDs</label>
+                            <comment>Required</comment>
+                            <frontend_model>payone_core/adminhtml_system_config_form_field_ratePayStoreIds</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>250</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ratepay_config>
+                        <show_customermessage translate="label,tooltip">
+                            <label>Show detailed error-messages</label>
+                            <tooltip>PAYONE_TOOLTIP_CUSTOMERMESSAGE</tooltip>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>41</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </show_customermessage>
+                    </fields>
+                </template_ratepay>
+                <template_payolution translate="label" module="payone_core">
+                    <label>Payolution</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>9</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <company_name translate="label, comment">
+                            <label>Company name</label>
+                            <comment>Required</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>52</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </company_name>
+                        <b2b_mode translate="label">
+                            <label>B2B mode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>53</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </b2b_mode>
+                        <types translate="label,comment">
+                            <label>Type</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>payone_core/system_config_payolutionType</source_model>
+                            <sort_order>54</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </types>
+                    </fields>
+                </template_payolution>
             </groups>
         </payone_payment>
 

@@ -40,6 +40,7 @@
 "Narrative Text","Buchungstext"
 "Maximum 81 digits. Placeholders: {{order_increment_id}}","Maximal 81 Zeichen. Platzhalter: {{order_increment_id}}"
 "Maximum 3 lines à 27 digits. Placeholders: {{order_increment_id}}","Maximal 3 Zeilen à 27 Zeichen. Platzhalter: {{order_increment_id}}"
+"Maximum 81 digits. Placeholders: {{order_increment_id}}. This is an advanced feature that has to be seperately activated by PAYONE for your merchant account!", "Maximal 81 Zeichen. Platzhalter: {{order_increment_id}}. Dieses Feature muss auf Anfrage bei PAYONE in Ihrem Händler Konto freigeschaltet werden!"
 
 "-- Please Select --","-- Bitte auswählen --"
 "Sort order","Reihenfolge"
@@ -58,6 +59,12 @@
 "New Barzahlen","Barzahlen"
 "Add Barzahlen","Barzahlen hinzufügen"
 "Edit Barzahlen","Barzahlen bearbeiten"
+"New RatePay","RatePay"
+"Add RatePay","RatePay hinzufügen"
+"Edit RatePay","RatePay bearbeiten"
+"New Payolution","Payolution"
+"Add Payolution","Payolution hinzufügen"
+"Edit Payolution","Payolution bearbeiten"
 "New Debit Payment","Lastschrift"
 "Add Debit Payment","Lastschrift hinzufügen"
 "Edit Debit Payment","Lastschrift bearbeiten"
@@ -70,9 +77,6 @@
 "New Wallet","Wallet"
 "Add Wallet","Wallet hinzufügen"
 "Edit Wallet","Wallet bearbeiten"
-"New Financing","Finanzierung"
-"Add Financing","Finanzierung hinzufügen"
-"Edit Financing","Finanzierung bearbeiten"
 "New Safe Invoice","Sicherer Rechnungskauf"
 "Add Safe Invoice","Sicheren Rechnungskauf hinzufügen"
 "Edit Safe Invoice","Sicheren Rechnungskauf bearbeiten"
@@ -82,6 +86,7 @@
 "Required when using Klarna","Pflicht bei Verwendung von Klarna"
 "Klarna Campaign Code","Klarna Kampagnen-Code"
 "Save payment data for logged in customer","Zahlungsdaten für angemeldete Benutzer speichern"
+"Sofort-Ueberweisung: Display IBAN/BIC inputs","Sofort-Ueberweisung: IBAN/BIC Felder anzeigen"
 "Scope","Geltungsbereich"
 "Countries","Länder"
 "Fee","Gebühr"
@@ -90,6 +95,7 @@
 "Check Card Validation Code","Prüfe Kartenprüfnummer"
 "Validate bank code","Prüfe Bankverbindung"
 "List of supported SEPA countries","Liste der unterstützten Kontoländer"
+"Request BIC","BIC abfragen"
 "Show additional account number/bank code number","Zusätzlich Kontonummer/Bankleitzahl anzeigen"
 "Only for German accounts","Nur bei Deutschen Konten"
 "Mandate enabled","Mandatserteilung aktivieren"
@@ -106,14 +112,12 @@
 "PaymentMethod Config was successfully deleted.","Zahlart-Konfiguration erfolgreich gelöscht."
 "Wallet-Type","Walletart"
 "Wallet Type","Walletart"
-"Financing Type", "Finanzierungs-Art"
 "Safe Invoice Type", "Sicherer Rechnungskauf: Typ"
 
 "Creditcard","Kreditkarte"
 "Invoice","Rechnung"
 "Safe Invoice","Sicherer Rechnungskauf"
 "Debit Payment","Lastschrift"
-"Financing","Finanzierung"
 "Advance Payment","Vorkasse"
 "Online Bank Transfer","Onlineüberweisung"
 "Cash on Delivery","Nachnahme"
@@ -171,11 +175,6 @@
 "Action in case Addresscheck responds with ERROR","Aktion für Addresscheck-Ergebnis 'ERROR'"
 "Placeholder: {{payone_customermessage}} (Message from Payone-Addresscheck","Platzhalter: {{payone_customermessage}} (Nachricht aus Payone-Addressprüfung) "
 "Action in case Creditrating check responds with ERROR","Aktion für Bonitätsprüfungs-Ergebnis 'ERROR'"
-
-"Please note that for Commerz Finanz only the mode ""preauthorization"" is available. Even if ""authorization"" is configured, a preauthorization is used in background. Afterwards payments must be captured. (CAPTURE)", "Beachten Sie, dass bei Commerz Finanz nur eine Vorautorisierung möglich ist. Auch wenn Autorisierung ausgewählt ist, wird im Hintergrund eine Vorautorisierung durchführt. Im Anschluss müssen die Zahlungen für Commerz Finanz eingezogen werden (CAPTURE)"
-"Please note that for Commerz Finanz only the mode ""preauthorization"" is available. Afterwards payments must be captured. (CAPTURE)", "Beachten Sie, dass bei Commerz Finanz nur eine Vorautorisierung möglich ist. Im Anschluss müssen die Zahlungen für Commerz Finanz eingezogen werden (CAPTURE)"
-"Please note that for Commerz Finanz the minimum transaction amount is EUR100.00.","Beachten Sie, dass bei der maximale Transaktionsbetrag bei Commerz Finanz 5000,00 Euro beträgt."
-"Please note that for Commerz Finanz the maximum transaction amount is EUR5000.00.","Beachten Sie, dass bei der minimale Transaktionsbetrag bei Commerz Finanz 100,00 Euro beträgt."
 
 "Stop Checkout", "Bestellprozess abbrechen"
 "Continue Checkout", "Bestellprozess fortführen"
@@ -345,6 +344,9 @@
 "Credit Card Type","Kreditkartentyp"
 "Credit Card Number","Kreditkartennummer"
 "Expiration Date","Verfallsdatum"
+"Please fill in all required fields","Bitte f&uuml;llen Sie alle Pflichtfelder aus"
+
+"You have to be at least 18 years old to use this payment type!","Sie m&uuml;ssen mindestens 18 Jahre alt sein um diese Zahlart nutzen zu k&ouml;nnen!"
 
 "Account holder: %s","Kontoinhaber: %s"
 "Account number: xxx%s","Kontonummer: xxx%s"
@@ -364,6 +366,7 @@
 
 ">>>SDK TRANSLATIONS<<<",">>>SDK TRANSLATIONS<<<"
 "PAYPAL_EXPRESS","Paypal Express"
+"PAYDIREKT","Paydirekt"
 
 "YES","Ja"
 "NO","Nein"
@@ -428,7 +431,6 @@
 "DISCOVER","Discover"
 "CARTE_BLEUE","Carte Bleue"
 
-"CFR","Commerz Finanz"
 "BSV","BillSAFE"
 "KLV","Klarna"
 "KLS","Klarna"
@@ -723,12 +725,6 @@
 "Check against POS blacklist","Prüfung gegen POS-Sperrliste"
 
 
-"TEMPLATE","/app/design/adminhtml/default/default/template/payone/core/system/config/tooltip/payment/financing.phtml"
-"Financing","Finanzierungssart"
-"Here you can define which financing methods you want to make available during checkout","Hier können Sie definieren welche Finanzierungsarten sie im Checkout anbieten wollen."
-"Currently these financing methods are available","Folge Arten werden aktuell unterstützt"
-
-
 "TEMPLATE","/app/design/adminhtml/default/default/template/payone/core/system/config/tooltip/payment/method.phtml"
 "Activated","Aktiviert"
 "This payment method is activated / deactivated","Hier aktivieren / deaktivieren Sie die Zahlungsmethode."
@@ -971,3 +967,34 @@
 "Firstname","Vorname"
 "Lastname","Nachname"
 "What is this?","Was ist das?"
+
+"Always","Immer"
+"Only on first order with this card","Bei erster Bestellung mit der Karte"
+
+"The RatePay Shop-Config for this ID could not be requested.","Die RatePay Shop-Konfiguration f&uuml;r diese ID konnte nicht angefragt werden."
+
+"RPV","Rechnungskauf"
+"RPS","Ratenzahlung"
+"RPD","Lastschrift"
+"RPP","Vorkasse"
+
+"Show detailed error-messages","Detaillierte Fehlermeldungen anzeigen"
+"PAYONE_TOOLTIP_CUSTOMERMESSAGE","Ja - die von RatePay gesendete Fehlermeldung anzeigen<br>Nein - eine allgemeine Fehlermeldung anzeigen"
+"Enter currency in ISO 4217 form - i.e. EUR or USD","Waehrung bitte in ISO 4217 Form eingeben - z.B. EUR oder USD"
+
+"PYV","Rechnungskauf"
+"PYM","Monatliche Rechnung"
+"PYS","Ratenzahlung"
+"PYD","Lastschrift"
+
+"PAYOLUTION_ACCEPTANCE_1","Mit der &Uuml;bermittlung der f&uuml;r die Abwicklung des Rechnungskaufes und einer Identit&auml;tspr&uuml;fung und Bonit&auml;tspr&uuml;fung erforderlicher Daten an payolution bin ich einverstanden."
+"PAYOLUTION_ACCEPTANCE_2","Meine"
+"PAYOLUTION_ACCEPTANCE_3","kann ich jederzeit mit Wirkung f&uuml;r die Zukunft widerrufen."
+"acceptance","Einwilligung"
+
+"Hereby I grant the","Hiermit erteile ich das"
+"SEPA-Mandate","SEPA-Lastschriftmandat"
+"Close window","Fenster schliessen"
+"Company trade registry number","Handelsregisternummer"
+
+"Payment type","Zahlart"

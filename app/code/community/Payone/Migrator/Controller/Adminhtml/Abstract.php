@@ -35,11 +35,6 @@ class Payone_Migrator_Controller_Adminhtml_Abstract extends Mage_Adminhtml_Contr
     /** @var Payone_Migrator_Model_Factory */
     protected $factory = null;
 
-    protected function _isAllowed()
-    {
-        return true;
-    }
-
     /**
      * @return Payone_Migrator_Helper_Data
      */

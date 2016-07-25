@@ -181,12 +181,12 @@ interface Payone_Core_Model_Config_Payment_Method_Interface
     public function getCustomerFormDataSave();
 
     /**
-     * @param int $check_cvc
+     * @param string $check_cvc
      */
     public function setCheckCvc($check_cvc);
 
     /**
-     * @return int
+     * @return string
      */
     public function getCheckCvc();
 
@@ -459,4 +459,64 @@ interface Payone_Core_Model_Config_Payment_Method_Interface
 
     public function hasParent();
 
+    /**
+     * @param array $ratepay_config
+     */
+    public function setRatepayConfig($ratepay_config);
+
+    /**
+     * @return array
+     */
+    public function getRatepayConfig();
+    
+    /**
+     * @param bool $show_customermessage
+     */
+    public function setShowCustomermessage($show_customermessage);
+
+    /**
+     * @return bool
+     */
+    public function getShowCustomermessage();
+    
+    /**
+     * @param string $company_name
+     */
+    public function setCompanyName($company_name);
+
+    /**
+     * @return string
+     */
+    public function getCompanyName();
+    
+    /**
+     * @param bool $b2b_mode
+     */
+    public function setB2bMode($b2b_mode);
+
+    /**
+     * @return bool
+     */
+    public function getB2bMode();
+    
+    /**
+     * @param bool $show_iban
+     */
+    public function setSofortueberweisungShowIban($show_iban);
+    
+    /**
+     * @return bool
+     */
+    public function getSofortueberweisungShowIban();
+    
+    /**
+     * @param bool $request_bic
+     */
+    public function setSepaRequestBic($request_bic);
+    
+    /**
+     * @return bool
+     */
+    public function getSepaRequestBic();
+    
 }

@@ -61,7 +61,7 @@ class Payone_Core_Model_Mapper_ApiRequest_Verification_BankAccountCheck
 
         $request->setIntegratorName('Magento');
         $request->setIntegratorVersion($helper->getMagentoVersion());
-        $request->setSolutionName('votum');
+        $request->setSolutionName('fatchip');
         $request->setSolutionVersion($helper->getPayoneVersion());
 
 
@@ -73,9 +73,11 @@ class Payone_Core_Model_Mapper_ApiRequest_Verification_BankAccountCheck
         $request->setBankaccount($bankaccount);
         $request->setBankcode($bankcode);
         $request->setBankcountry($bankcountry);
-        if (!empty($iban) and !empty($bic)) {
+        if (!empty($iban)) {
             $request->setIban(strtoupper($iban));
-            $request->setBic(strtoupper($bic));  // ensure bic and iban are sent uppercase
+            if (!empty($bic)) {
+                $request->setBic(strtoupper($bic));  // ensure bic and iban are sent uppercase
+            }
         }
 
 

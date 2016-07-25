@@ -70,9 +70,7 @@ class Payone_Licensemanager_Block_Adminhtml_Notification_Window extends Mage_Adm
 
     public function getNoticeMessageUrl()
     {
-        foreach (Mage::app()->getStores() as $storeId => $store) {
-            return Mage::getUrl('payonelicensemanager/active', array('_store' => $storeId));
-        }
+        return $this->getUrl('adminhtml/payonelicensemanager_active');
     }
 
     public function getReadDetailsText()

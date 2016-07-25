@@ -69,6 +69,16 @@ class Payone_Core_Model_Mapper_ApiRequest_Payment_Debit
             $request->setInvoicing($invoicing);
         }
 
+        $paymentMethod = $this->getPaymentMethod();
+        if ($paymentMethod instanceof Payone_Core_Model_Payment_Method_Ratepay) {
+            $payData = new Payone_Api_Request_Parameter_Paydata_Paydata();
+            $payData->addItem(new Payone_Api_Request_Parameter_Paydata_DataItem(
+                array('key' => 'shop_id', 'data' => $paymentMethod->getInfoInstance()->getPayoneRatepayShopId())
+            ));
+            $request->setPaydata($payData);
+            $request->setApiVersion('3.10');
+        }
+        
         $this->dispatchEvent($this->getEventName(), array('request' => $request, 'creditmemo' => $this->getCreditmemo()));
         $this->dispatchEvent($this->getEventPrefix() . '_all', array('request' => $request));
         return $request;
@@ -157,10 +167,7 @@ class Payone_Core_Model_Mapper_ApiRequest_Payment_Debit
                 $params['de'] = $itemData->getName();
                 $params['no'] = $number;
                 $params['pr'] = $itemData->getPriceInclTax();
-
-                if ($this->getPaymentMethod()->mustTransmitInvoicingItemTypes()) {
-                    $params['it'] = Payone_Api_Enum_InvoicingItemType::GOODS;
-                }
+                $params['it'] = Payone_Api_Enum_InvoicingItemType::GOODS;
 
 
                 // We have to load the tax percentage from the order item
@@ -189,8 +196,8 @@ class Payone_Core_Model_Mapper_ApiRequest_Payment_Debit
 
             // Add Discount as a position
             $discountAmount = $creditmemo->getDiscountAmount();
-            if ($discountAmount > 0) {
-                $invoicing->addItem($this->mapDiscountAsItem(-1 * $discountAmount));
+            if ($discountAmount) {
+                $invoicing->addItem($this->mapDiscountAsItem($discountAmount));
             }
         }
         return $invoicing;

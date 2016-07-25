@@ -35,11 +35,6 @@ class Payone_Core_Controller_Adminhtml_Abstract extends Mage_Adminhtml_Controlle
     /** @var Payone_Core_Model_Factory */
     protected $factory = null;
 
-    protected function _isAllowed()
-    {
-        return Mage::getSingleton('admin/session')->isAllowed('admin/payone/configuration');
-    }
-
     /**
      * @return Payone_Core_Helper_Config
      */

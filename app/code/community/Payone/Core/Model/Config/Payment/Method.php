@@ -142,9 +142,9 @@ class Payone_Core_Model_Config_Payment_Method
     protected $paypal_express_image = '';
 
     /**
-     * @var int
+     * @var string
      */
-    protected $check_cvc = 0;
+    protected $check_cvc = 'no';
     /**
      * @var int
      */
@@ -201,7 +201,37 @@ class Payone_Core_Model_Config_Payment_Method
      * @var int
      */
     protected $currency_convert = 0;
+    
+    /**
+     * @var array
+     */
+    protected $ratepay_config = array();
+    
+    /**
+     * @var bool
+     */
+    protected $show_customermessage = false;
+    
+    /**
+     * @var string
+     */
+    protected $company_name = '';
+    
+    /**
+     * @var bool
+     */
+    protected $b2b_mode = false;
+    
+    /**
+     * @var bool
+     */
+    protected $sofortueberweisung_show_iban = false;
 
+    /**
+     * @var bool
+     */
+    protected $sepa_request_bic = false;
+    
     /**
      * Check if Method can be used in Country
      *
@@ -349,7 +379,7 @@ class Payone_Core_Model_Config_Payment_Method
     }
 
     /**
-     * @param int $check_cvc
+     * @param string $check_cvc
      */
     public function setCheckCvc($check_cvc)
     {
@@ -357,10 +387,16 @@ class Payone_Core_Model_Config_Payment_Method
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getCheckCvc()
     {
+        //backward compatibility to the old 0/1 style
+        if($this->check_cvc == '1') {
+            $this->check_cvc = 'always';
+        } elseif($this->check_cvc == '0') {
+            $this->check_cvc = 'no';
+        }
         return $this->check_cvc;
     }
 
@@ -982,4 +1018,101 @@ class Payone_Core_Model_Config_Payment_Method
     {
         return $this->currency_convert;
     }
+    
+    /**
+     * @param array $ratepay_config
+     */
+    public function setRatepayConfig($ratepay_config)
+    {
+        $this->ratepay_config = $ratepay_config;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRatepayConfig()
+    {
+        return $this->ratepay_config;
+    }
+    
+    /**
+     * @param bool $show_customermessage
+     */
+    public function setShowCustomermessage($show_customermessage)
+    {
+        $this->show_customermessage = (bool)$show_customermessage;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getShowCustomermessage()
+    {
+        return $this->show_customermessage;
+    }
+    
+    /**
+     * @param string $company_name
+     */
+    public function setCompanyName($company_name)
+    {
+        $this->company_name = $company_name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompanyName()
+    {
+        return $this->company_name;
+    }
+    
+    /**
+     * @param bool $b2b_mode
+     */
+    public function setB2bMode($b2b_mode)
+    {
+        $this->b2b_mode = $b2b_mode;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getB2bMode()
+    {
+        return $this->b2b_mode;
+    }
+    
+    /**
+     * @param bool $show_iban
+     */
+    public function setSofortueberweisungShowIban($show_iban)
+    {
+        $this->sofortueberweisung_show_iban = (bool)$show_iban;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function getSofortueberweisungShowIban()
+    {
+        return (bool)$this->sofortueberweisung_show_iban;
+    }
+    
+    /**
+     * @param bool $show_iban
+     */
+    public function setSepaRequestBic($request_bic)
+    {
+        $this->sepa_request_bic = (bool)$request_bic;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function getSepaRequestBic()
+    {
+        return (bool)$this->sepa_request_bic;
+    }
+    
 }

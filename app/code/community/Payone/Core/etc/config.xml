@@ -24,7 +24,7 @@
 <config>
     <modules>
         <Payone_Core>
-            <version>3.3.9</version>
+            <version>3.6.1</version>
         </Payone_Core>
     </modules>
 
@@ -70,6 +70,9 @@
                     <customer>
                         <table>payone_customer</table>
                     </customer>
+                    <ratepay_config>
+                        <table>payone_ratepay_config</table>
+                    </ratepay_config>
                 </entities>
             </payone_core_resource>
 
@@ -152,10 +155,6 @@
                 <payone_config_payment_method_id>
                     <to_order_payment>*</to_order_payment>
                 </payone_config_payment_method_id>
-                <payone_financing_type>
-                    <!-- Financing: Type -->
-                    <to_order_payment>*</to_order_payment>
-                </payone_financing_type>
                 <payone_safe_invoice_type>
                     <!-- Financing: Type -->
                     <to_order_payment>*</to_order_payment>
@@ -224,6 +223,30 @@
                     <!-- Safe Invoice Klarna: Customer Telephone -->
                     <to_order_payment>*</to_order_payment>
                 </payone_customer_telephone>
+                <payone_ratepay_shop_id>
+                    <!-- RatePay: Shop (config) ID -->
+                    <to_order_payment>*</to_order_payment>
+                </payone_ratepay_shop_id>
+                <payone_payolution_type>
+                    <!-- Payolution type -->
+                    <to_order_payment>*</to_order_payment>
+                </payone_payolution_type>
+                <payone_payolution_iban>
+                    <!-- Payolution iban -->
+                    <to_order_payment>*</to_order_payment>
+                </payone_payolution_iban>
+                <payone_payolution_bic>
+                    <!-- Payolution bic -->
+                    <to_order_payment>*</to_order_payment>
+                </payone_payolution_bic>
+                <payone_isb2b>
+                    <!-- B2B mode ? -->
+                    <to_order_payment>*</to_order_payment>
+                </payone_isb2b>
+                <payone_trade_registry_number>
+                    <!-- Trade registry number -->
+                    <to_order_payment>*</to_order_payment>
+                </payone_trade_registry_number>
             </sales_convert_quote_payment>
             <sales_convert_quote_address>
                 <payone_addresscheck_score>
@@ -359,15 +382,6 @@
                     </payone_core_observer>
                 </observers>
             </sales_order_payment_cancel>
-            <payone_core_transactionstatus_all>
-                <observers>
-                    <payone_core_observer_forwarding>
-                        <type>singleton</type>
-                        <class>payone_core/observer_transactionStatus_forwarding</class>
-                        <method>onAll</method>
-                    </payone_core_observer_forwarding>
-                </observers>
-            </payone_core_transactionstatus_all>
             <payone_core_transactionstatus_appointed>
                 <observers>
                     <payone_core_observer_orderConfirmation>
@@ -459,13 +473,13 @@
 
     <admin>
         <routers>
-            <payone_core>
-                <use>admin</use>
-                <args>
-                    <module>Payone_Core</module>
-                    <frontName>payone_core</frontName>
-                </args>
-            </payone_core>
+            <adminhtml>
+				<args>
+					<modules>
+						<payone_core before="Mage_Adminhtml">Payone_Core_Adminhtml</payone_core>
+					</modules>
+				</args>
+			</adminhtml>
         </routers>
     </admin>
 
@@ -493,7 +507,7 @@
                 </Payone_Core>
             </modules>
         </translate>
-
+        
     </adminhtml>
 
     <frontend>
@@ -505,6 +519,13 @@
                     <frontName>payone_core</frontName>
                 </args>
             </payone_core>
+            <checkout>
+                <args>
+                    <modules>
+                         <Payone_Core before="Mage_Checkout">Payone_Core_Checkout</Payone_Core>
+                    </modules>
+                </args>
+            </checkout>
         </routers>
 
         <layout>
@@ -543,6 +564,16 @@
                 <model>payone_core/payment_method_barzahlen</model>
                 <group>payone</group>
             </payone_barzahlen>
+            <payone_ratepay translate="title" module="payone_core">
+                <title>PAYONE - RatePay</title>
+                <model>payone_core/payment_method_ratepay</model>
+                <group>payone</group>
+            </payone_ratepay>
+            <payone_payolution translate="title" module="payone_core">
+                <title>PAYONE - Payolution</title>
+                <model>payone_core/payment_method_payolution</model>
+                <group>payone</group>
+            </payone_payolution>
             <payone_cash_on_delivery translate="title" module="payone_core">
                 <title>PAYONE - Cash on Delivery</title>
                 <model>payone_core/payment_method_cashOnDelivery</model>
@@ -553,11 +584,6 @@
                 <model>payone_core/payment_method_debitPayment</model>
                 <group>payone</group>
             </payone_debit_payment>
-            <payone_financing translate="title" module="payone_core">
-                <title>PAYONE - Financing</title>
-                <model>payone_core/payment_method_financing</model>
-                <group>payone</group>
-            </payone_financing>
             <payone_safe_invoice translate="title" module="payone_core">
                 <title>PAYONE - Safe Invoice</title>
                 <model>payone_core/payment_method_safeInvoice</model>
@@ -591,17 +617,15 @@
             <template_debit_payment>
                 <use_global>1</use_global>
                 <check_bankaccount>0</check_bankaccount>
+                <sepa_request_bic>0</sepa_request_bic>
                 <sepa_de_show_bank_data>0</sepa_de_show_bank_data>
                 <sepa_mandate_enabled>1</sepa_mandate_enabled>
                 <sepa_mandate_download_enabled>1</sepa_mandate_download_enabled>
             </template_debit_payment>
             <template_online_bank_transfer>
                 <use_global>1</use_global>
+                <sofortueberweisung_show_iban>0</sofortueberweisung_show_iban>
             </template_online_bank_transfer>
-            <template_financing>
-                <types>CFR</types>
-                <use_global>1</use_global>
-            </template_financing>
             <template_safe_invoice>
                 <types>BSV</types>
                 <use_global>1</use_global>
@@ -624,6 +648,12 @@
             <template_barzahlen>
                 <use_global>1</use_global>
             </template_barzahlen>
+            <template_ratepay>
+                <use_global>1</use_global>
+            </template_ratepay>
+            <template_payolution>
+                <use_global>1</use_global>
+            </template_payolution>
         </payone_payment>
         <payone_general>
             <global>
@@ -640,12 +670,15 @@
                 <creditcard>a:1:{s:18:"_1343137391927_927";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</creditcard>
                 <invoice>a:1:{s:18:"_1338893611948_948";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</invoice>
                 <debit_payment>a:1:{s:18:"_1338893616379_379";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</debit_payment>
-                <financing>a:1:{s:23:"_payone_status_mapping2";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</financing>
                 <safe_invoice>a:1:{s:23:"_payone_status_mapping3";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</safe_invoice>
                 <advance_payment>a:2:{s:18:"_1338893618715_715";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:11:"new|pending";}}s:18:"_1355483828815_815";a:2:{s:8:"txaction";a:1:{i:0;s:4:"paid";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</advance_payment>
                 <online_bank_transfer>a:1:{s:18:"_1343118466182_182";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</online_bank_transfer>
                 <cash_on_delivery>a:1:{s:18:"_1338893625332_332";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</cash_on_delivery>
                 <wallet>a:1:{s:18:"_1343137411652_652";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</wallet>
+                <barzahlen>a:1:{s:23:"_payone_status_mapping4";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</barzahlen>
+                <ratepay>a:1:{s:17:"_1468417699073_73";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</ratepay>
+                <payolution>a:1:{s:18:"_1468430772551_551";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</payolution>
+                <financing>a:1:{s:18:"_1468430123551_512";a:2:{s:8:"txaction";a:1:{i:0;s:9:"appointed";}s:12:"state_status";a:1:{i:0;s:21:"processing|processing";}}}</financing>
             </status_mapping>
         </payone_general>
         <payone_protect>
@@ -658,8 +691,8 @@
             <creditcrating>
                 <integration_event>before_payment</integration_event>
                 <handle_response_error>continue_checkout</handle_response_error>
-                <payment_hint_text><![CDATA[Ich willige ein, dass von XY-Shop zum Zweck der eigenen Kreditprüfung ggf. Bonitätsinformationen auf der Basis mathematisch-statistischer Verfahren von der Firma ABC, Musterstr. 1, 11111 Musterhausen abgerufen und während der Dauer der Kundenbeziehung Adress- und ggf. Negativdaten an die ABC übermittelt werden, die bei berechtigtem Interesse Dritten für Kreditprüfungszwecke Bonitätsinformationen auf Basis mathematisch-statistischer Verfahren zur Verfügung stellt.
-Detaillierte Informationen zur Arbeitsweise der ABC finde ich unter www.abc.de/fghi…]]>
+                <payment_hint_text><![CDATA[Ich willige ein, dass von XY-Shop zum Zweck der eigenen Kreditpr&uuml;fung ggf. Bonit&auml;tsinformationen auf der Basis mathematisch-statistischer Verfahren von der Firma ABC, Musterstr. 1, 11111 Musterhausen abgerufen und w&auml;hrend der Dauer der Kundenbeziehung Adress- und ggf. Negativdaten an die ABC &Uuml;bermittelt werden, die bei berechtigtem Interesse Dritten f&uuml;r Kreditpr&uuml;fungszwecke Bonit&auml;tsinformationen auf Basis mathematisch-statistischer Verfahren zur Verf&uuml;gung stellt.
+Detaillierte Informationen zur Arbeitsweise der ABC finde ich unter www.abc.de/fghi...]]>
                 </payment_hint_text>
             </creditcrating>
         </payone_protect>
